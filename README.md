@@ -39,8 +39,3 @@ arguments facultatifs :
 Entrez la requête de recherche : 
 Choisissez le moteur de recherche (Google/Bing) :
 ```
-
-## Tutoriel ##
-
-[!asciicast](https://asciinema.org/a/ORUdQnAhDQb9CDquTXVrk6yTc.png)](https://asciinema.org/a/ORUdQnAhDQb9CDquTXVrk6yTc)
-
