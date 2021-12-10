@@ -275,7 +275,7 @@ def main():
     else:
         query = options.query
     if not options.engine:
-        engine = input("[?] Choisissez votre moteur de recherche (Ask | Bing): ")
+        engine = input("[?] Choisissez votre moteur de recherche (Ask | Bing | WoW): ")
     else:
         engine = options.engine
 
