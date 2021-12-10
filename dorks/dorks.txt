@@ -276,7 +276,10 @@ _news/news.php?id=
 "MacHTTP" filetype:log inurl:machttp.log
 "Mecury Version" "Infastructure Group"
 "Microsoft (R) Windows * (TM) Version * DrWtsn32 Copyright (C)" ext:log
-"Microsoft ® Windows * ™ Version * DrWtsn32 Copyright ©" ext:log
+"Microsoft 
+ Windows * 
+ Version * DrWtsn32 Copyright 
+" ext:log
 "Microsoft CRM : Unsupported Browser Version"
 "More Info about MetaCart Free"
 "Most Submitted Forms and s?ri?ts" "this section"
@@ -1340,7 +1343,8 @@ filetype:r2w r2w
 filetype:rdp rdp
 filetype:reg "Terminal Server Client"
 filetype:reg reg +intext:"defaultusername" +intext:"defaultpassword"
-filetype:reg reg +intext:Ã¢? WINVNC3Ã¢?
+filetype:reg reg +intext:
+? WINVNC3
 filetype:reg reg HKEY_CURRENT_USER SSHHOSTKEYS
 filetype:SHTML SHTML
 filetype:sql "insert into" (pass|passwd|password)
@@ -2860,7 +2864,8 @@ item/detail.php?num=
 itemDesc.php?CartId=
 itemdetail.php?item=
 itemdetails.php?catalogid=
-Jetbox One CMS Ã¢?Â¢" | "
+Jetbox One CMS 
+" | "
 Jetstream ? *")
 kategorie.php4?id=
 kboard/kboard.php?board=
@@ -3954,8 +3959,8 @@ shredder-categories.php?id=
 signin filetype:url
 sinformer/n/imprimer.php?id=
 singer/detail.php?siteid=
-site:.pk intext:Warning: mysql_fetch_array(): supplied argument is not a valid MySQL result resource in & “id”
-site:.pk intext:Warning: mysql_free_result(): supplied argument is not a valid MySQL result resource in & “id”
+site:.pk intext:Warning: mysql_fetch_array(): supplied argument is not a valid MySQL result resource in & 
+site:.pk intext:Warning: mysql_free_result(): supplied argument is not a valid MySQL result resource in & 
 site:edu admin grades
 site:netcraft.com intitle:That.Site.Running Apache
 site:www.mailinator.com inurl:ShowMail.do
