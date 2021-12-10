@@ -24,7 +24,7 @@ arguments facultatifs :
   -q QUERY, --query QUERY
                         Spécifie la requête de recherche sans ''.
   -e ENGINE, --engine ENGINE
-                        Spécifie le moteur de recherche (Google/Bing)
+                        Spécifie le moteur de recherche (Ask | Bing | WoW)
   -p PAGES, --pages PAGES
                         Spécifie le nombre de pages (par défaut : 1)
   -P PROCESSES, --processes PROCESSES
@@ -37,5 +37,5 @@ arguments facultatifs :
 
 ```
 Entrez la requête de recherche : 
-Choisissez le moteur de recherche (Google/Bing) :
+Choisissez le moteur de recherche (Ask | Bing | WoW) :
 ```
