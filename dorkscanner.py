@@ -1,5 +1,7 @@
+#!/usr/bin/python3
 import os
 import sys
+import signal
 import requests
 import argparse
 from random import randint
@@ -8,6 +10,7 @@ from multiprocessing import Pool
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as bsoup
 from progress.bar import ShadyBar
+
 
 GREEN, RED, ORANGE, PURPLE, CYAN, WHITE, YELLOW = (
     "\033[1;32m",
@@ -63,6 +66,12 @@ def get_arguments():
     options = parser.parse_args()
     return options
 
+def kill(pool=1):
+    for i in range(int(options.processes)):
+        pool.close()
+    pool.terminate()
+    print("\nMerci d'avoir utilisé ce programme !")
+    signal.signal(signal.SIGKILL,sys.exit(1))
 
 def ask_search(query, page):
     counter = 0
@@ -145,7 +154,7 @@ def wow_search(query, page):
     return result
 
 
-def bing_search(query, page):
+def bing_search(page, pool, query):
     counter = 0
     if options.dork:
         dorksfile = os.getcwd() + "/dorks/" + options.dork
@@ -160,10 +169,15 @@ def bing_search(query, page):
                 base_url = "https://www.bing.com/search"
                 headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0"}
                 params = {"q": line, "first": page * 10 + 1}
-                resp = requests.get(base_url, params=params, headers=headers)
+                resp = requests.get(base_url, params=params, headers=headers, allow_redirects=False)
                 soup = bsoup(resp.text, "html.parser")
+                if "ranParachuteScript" in resp.text:
+                    error = print(RED + "[¤] Bing bloque nos requêtes")
+                    print(RED + "[¤] Veuillez utiliser un autre moteur de recherche")
+                    kill(pool)
                 counter += 1
                 links = soup.findAll("cite")
+                print(soup)
                 bar.next()
                 for link in links:
                     result.append(link.text)
@@ -185,27 +199,27 @@ def bing_search(query, page):
 
 def search_result(q, engine, pages, processes, result, output):
     blacklist = [
-        "facebook",
-        "google",
-        "pastebin",
-        "vk",
-        "gist",
-        "github",
-        "udemy",
-        "jetbrains",
-        "youtube",
-        "whatsapp",
-        "telegram",
-        "twitter",
-        "vuldb",
-        "tenable",
-        "exploit-db",
-        "stackoverflow",
-        "bing",
-        "w3schools",
-        "wikipedia",
-        "cvedetails",
-        "exploitdb",
+        ".facebook.",
+        ".google.",
+        ".pastebin.",
+        ".vk.",
+        ".gist.",
+        ".github.",
+        ".udemy.",
+        ".jetbrains.",
+        ".youtube.",
+        ".whatsapp.",
+        ".telegram.",
+        ".twitter.",
+        ".vuldb.",
+        ".tenable.",
+        ".exploit-db.",
+        ".stackoverflow.",
+        ".bing.",
+        ".w3schools.",
+        ".wikipedia.",
+        ".cvedetails.",
+        ".exploitdb.",
     ]
 
     pagesfolder = os.getcwd() + "/pages/"
@@ -220,10 +234,13 @@ def search_result(q, engine, pages, processes, result, output):
         try:
             for r in range:
                 f = open(page, "a", encoding="utf8", errors="ignore")
-                if r not in blacklist and "?" in r and "=" in r:
-                    f.write(r + "\n")
-                    print(color + "[+] " + r)
-                    counter += 1
+                if "?" in r and "=" in r:
+                    for link in blacklist:
+                        if link not in r:
+                            f.write(r + "\n")
+                            print(color + "[+] " + r)
+                            counter += 1
+                            break
                 f.close()
         except:
             print("Aucun résultat trouvé")
@@ -253,47 +270,9 @@ def is_internet_available():
         print(RED + "[!] Connexion à Internet : PAS OK !\n")
         exit()
 
-
-banner = """ 
-
-     ____             _     ____                                  
-    |  _ \  ___  _ __| | __/ ___|  ___ __ _ _ __  _ __   ___ _ __ 
-    | | | |/ _ \| '__| |/ /\___ \ / __/ _` | '_ \| '_ \ / _ \ '__|
-    | |_| | (_) | |  |   <  ___) | (_| (_| | | | | | | |  __/ |   
-    |____/ \___/|_|  |_|\_\|____/ \___\__,_|_| |_|_| |_|\___|_| 
-    
-        Made By	: Balgogan (github.com/Balgogan)
-
-"""
-options = get_arguments()
-
-
 def main():
     print(is_internet_available())
-    if not options.query and not options.dork:
-        query = input("[?] Entrez votre recherche : ")
-    else:
-        query = options.query
-    if not options.engine:
-        engine = input("[?] Choisissez votre moteur de recherche (Ask | Bing | WoW): ")
-    else:
-        engine = options.engine
-
-    if engine.lower() == "ask":
-        target = partial(ask_search, query)
-    elif engine.lower() == "bing":
-        if options.dork:
-            print(
-                "[!] La recherche d'URL peut prendre quelques minutes avec l'option -d"
-            )
-        target = partial(bing_search, query)
-    elif engine.lower() == "wow":
-        target = partial(wow_search, query)
-    else:
-        print("[-] L'option entrée est invalide !...")
-        print("[-] Fermeture du programme....")
-        exit()
-
+    
     if not options.pages:
         pages = 1
     else:
@@ -303,17 +282,60 @@ def main():
         processes = 2
     else:
         processes = options.processes
+    pool = Pool(int(processes))
     if not options.output:
         output = "pages.txt"
     else:
         output = options.output
     if not options.dork:
         dork = "dorks.txt"
+    
+    
 
-    with Pool(int(processes)) as p:
+    if not options.query and not options.dork:
+        query = input("[?] Entrez votre recherche : ")
+    else:
+        query = options.query
+    if not options.engine:
+        engine = input("[?] Choisissez votre moteur de recherche (Ask | Bing): ")
+    else:
+        engine = options.engine
+
+    if engine.lower() == "ask":
+        target = partial(ask_search, query)
+    elif engine.lower() == "bing":
+        if options.dork:
+            print("[!] La recherche d'URL peut prendre quelques minutes avec l'option -d")
+        target = partial(bing_search(int(pages), pool, query))
+    elif engine.lower() == "wow":
+        target = partial(wow_search, query)
+    else:
+        print("[-] L'option entrée est invalide !...")
+        print("[-] Fermeture du programme....")
+        exit()
+
+    with pool as p:
         result = p.map(target, range(int(pages)))
     search_result(query, engine, pages, processes, result, output)
 
+banner = """ 
+
+    ·▄▄▄▄        ▄▄▄  ▄ •▄     .▄▄ ·  ▄▄·  ▄▄▄·  ▐ ▄  ▐ ▄ ▄▄▄ .▄▄▄  
+    ██▪ ██ ▪     ▀▄ █·█▌▄▌▪    ▐█ ▀. ▐█ ▌▪▐█ ▀█ •█▌▐█•█▌▐█▀▄.▀·▀▄ █·
+    ▐█· ▐█▌ ▄█▀▄ ▐▀▀▄ ▐▀▀▄·    ▄▀▀▀█▄██ ▄▄▄█▀▀█ ▐█▐▐▌▐█▐▐▌▐▀▀▪▄▐▀▀▄ 
+    ██. ██ ▐█▌.▐▌▐█•█▌▐█.█▌    ▐█▄▪▐█▐███▌▐█ ▪▐▌██▐█▌██▐█▌▐█▄▄▌▐█•█▌
+    ▀▀▀▀▀•  ▀█▄▀▪.▀  ▀·▀  ▀     ▀▀▀▀ ·▀▀▀  ▀  ▀ ▀▀ █▪▀▀ █▪ ▀▀▀ .▀  ▀
+    
+                Made By : Balgogan (https://github.com/Balgogan)
+                *** *  * ** * ** * *** *  * ** * ** * *** ** * *
+                *    *      * *  *  *    *      * *  * *    * * 
+                   *   *   *        *   *   *       *   *   *  
+                 *         *    *        *         *    *
+                     *    *   *     *    *   * *  *    *   * 
+                            *      *     *       *       *   
+"""
+
+options = get_arguments()
 
 print(color + banner)
 
@@ -322,8 +344,7 @@ try:
     if options.query and options.engine:
         exit()
 except KeyboardInterrupt:
-    print("\nMerci d'avoir utilisé ce programme !")
-    exit()
+    signal.signal(signal.SIGKILL,sys.exit(1))   
 except TimeoutError:
     print(RED + "\n[-] Trop de requêtes, Réessayez plus tard....")
     exit()
