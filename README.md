@@ -1,41 +1,44 @@
 # DORK SCANNER #
 
-Un scanner de moteurs de recherche typique qui scrape les moteurs de recherche avec des requêtes que vous fournissez afin de trouver des URL vulnérables.
+A typical search engine scanner that scans search engines with queries you provide to find vulnerable URLs.
 
 
 ## Introduction ##
 
-Le dorking est une technique utilisée par les rédactions, les organismes d'enquête, les auditeurs de sécurité et les criminels avertis pour interroger divers moteurs de recherche afin de trouver des informations cachées sur des sites Web publics et des vulnérabilités exposées par des serveurs publics. Le dorking est une façon d'utiliser les moteurs de recherche à leur pleine capacité pour pénétrer les services basés sur le web à des profondeurs qui ne sont pas nécessairement visibles au premier abord.
+Dorking is a technique used by news organizations, investigative agencies, security auditors, and savvy criminals to query various search engines to find hidden information on public websites and vulnerabilities exposed by public servers. Dorking is a way to use search engines to their fullest capacity to penetrate web-based services to depths that may not be visible at first glance.
 
-## Exigences ##
+## Requirements ##
 
 ```
 pip3 install -r requirements.txt
 ```
 
-## Utilisation ##
+## Usage ##
 
 ```
 $ python3 dorkScanner.py --help
-utilisation : dorkScanner.py [-h] [-q QUERY] [-e ENGINE] [-p PAGES] [-P PROCESSES] [-o OUTPUT]
+usage: dorkScanner.py [-h] [-q QUERY] [-e ENGINE] [-p PAGES] [-P PROCESSES] [-o OUTPUT]
 
-arguments facultatifs :
-  -h, --help affiche ce message d'aide et sort
+optional arguments:
+  -h, --help display this help message and exit
   -q QUERY, --query QUERY
-                        Spécifie la requête de recherche sans ''.
+                        Specifies the search query without ''.
   -e ENGINE, --engine ENGINE
-                        Spécifie le moteur de recherche (Ask | Bing | WoW)
+                        Specifies the search engine (Ask | Bing | WoW)
   -p PAGES, --pages PAGES
-                        Spécifie le nombre de pages (par défaut : 1)
+                        Specifies the number of pages (default: 1)
   -P PROCESSES, --processes PROCESSES
-                        Spécifiez le nombre de processus (par défaut : 2)
+                        Specify the number of processes (default: 2)
   -o OUTPUT, --output OUTPUT 
-			Spécifie le nom du fichier de sortie (chemin absolu ou relatif)
+			Specify the name of the output file (absolute or relative path)
 ```
 
-### Vous pouvez également spécifier les arguments à l'intérieur du programme :
+### You can also specify arguments inside the program:
 
 ```
-Entrez la requête de recherche : 
-Choisissez le moteur de recherche (Ask | Bing | WoW) :
+Enter the search query: 
+Choose the search engine (Ask | Bing | WoW):
 ```
+
+
+Translated with www.DeepL.com/Translator (free version)
