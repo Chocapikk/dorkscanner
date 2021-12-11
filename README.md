@@ -39,6 +39,3 @@ optional arguments:
 Enter the search query: 
 Choose the search engine (Ask | Bing | WoW):
 ```
-
-
-Translated with www.DeepL.com/Translator (free version)
