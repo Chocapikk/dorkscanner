@@ -27,41 +27,41 @@ color = colours[randint(0, 4)]
 
 def get_arguments():
     parser = argparse.ArgumentParser(
-        prog="python3 dorkScanner.py",
-        description="Exemple : python dorkScanner.py -e Bing -p 2 -P 1 -o test.txt -d dorks.txt",
+        prog="python3 dorkscanner.py",
+        description="Exemple : python3 dorkscanner.py -e Bing -p 2 -P 1 -o test.txt -d dorks.txt",
     )
     parser.add_argument(
         "-q",
         "--query",
         dest="query",
-        help="Spécifie la recherche sans les guillemets ('')",
+        help="Specifies the query",
     )
     parser.add_argument(
         "-e",
         "--engine",
         dest="engine",
-        help="Spécifie le moteur de recherche (Ask | Bing | WoW)",
+        help="Specifies the search engine (Ask | Bing | WoW)",
     )
     parser.add_argument(
-        "-p", "--pages", dest="pages", help="Spécifie le nombre de pages (Défaut: 1)"
+        "-p", "--pages", dest="pages", help="Specifies the pages numbers (Default: 1)"
     )
     parser.add_argument(
         "-P",
         "--processes",
         dest="processes",
-        help="Spécifie le nombre de processus (Défaut: 2)",
+        help="Specifies the number of processes (Default: 2)",
     )
     parser.add_argument(
         "-o",
         "--output",
         dest="output",
-        help=f"Spécifie le nom du fichier de sortie \n(Défaut: {os.getcwd()}/pages/pages.txt)",
+        help=f"Specifies the output file name \n(Default: {os.getcwd()}/pages/pages.txt)",
     )
     parser.add_argument(
         "-d",
         "--dork",
         dest="dork",
-        help=f"Spécifie le fichier contenant les dorks (Défaut: {os.getcwd()}/dorks/dorks.txt)",
+        help=f"Specifies the file containing the dorks (Default: {os.getcwd()}/dorks/dorks.txt)",
     )
     options = parser.parse_args()
     return options
@@ -70,18 +70,19 @@ def kill(pool=1):
     for i in range(int(options.processes)):
         pool.close()
     pool.terminate()
-    print("\nMerci d'avoir utilisé ce programme !")
+    print("\nThank you for using this program !")
     signal.signal(signal.SIGKILL,sys.exit(1))
 
 def ask_search(query, page):
     counter = 0
+
     if options.dork:
         dorksfile = os.getcwd() + "/dorks/" + options.dork
         result = []
         try:
             file = open(dorksfile, "r", encoding="utf8", errors="ignore")
             lines = file.readlines()
-            bar = ShadyBar(f"[!] Patientez - Recherche effectuée :", max=len(lines))
+            bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines))
             for line in lines:
                 base_url = "https://www.ask.com/web"
                 headers = {
@@ -99,7 +100,7 @@ def ask_search(query, page):
             return result
 
         except FileNotFoundError:
-            print(f"Vérifiez que le fichier {options.dork} se trouve bien dans le dossier /dorks/")
+            print(f"Check that the file {options.dork} is located in the /dorks/ folder")
     else:
         base_url = "https://www.ask.com/web"
         headers = {
@@ -125,7 +126,7 @@ def wow_search(query, page):
         try:
             file = open(dorksfile, "r", encoding="utf8", errors="ignore")
             lines = file.readlines()
-            bar = ShadyBar(f"[!] Patientez - Recherche effectuée :", max=len(lines))
+            bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines))
 
             for line in lines:
                 base_url = "https://www.wow.com/search"
@@ -140,7 +141,7 @@ def wow_search(query, page):
                     result.append(link.text)
             bar.finish()
         except FileNotFoundError:
-            print(f"Vérifiez que le fichier {options.dork} se trouve bien dans le dossier /dorks/")
+            print(f"Check that the {options.dork}  file is located on the /dorks/ folder")
     else:
         base_url = "https://www.wow.com/search"
         headers = {"User-Agent": "Mozilla/17.0 (X22; Parrot OS; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0"}
@@ -163,7 +164,7 @@ def bing_search(page, pool, query):
         try:
             file = open(dorksfile, "r", encoding="utf8", errors="ignore")
             lines = file.readlines()
-            bar = ShadyBar("[!] Patientez - Recherche effectuée :", max=len(lines))
+            bar = ShadyBar("[!] Please wait - Requests performed :", max=len(lines))
 
             for line in lines:
                 base_url = "https://www.bing.com/search"
@@ -172,8 +173,8 @@ def bing_search(page, pool, query):
                 resp = requests.get(base_url, params=params, headers=headers, allow_redirects=False)
                 soup = bsoup(resp.text, "html.parser")
                 if "ranParachuteScript" in resp.text:
-                    error = print(RED + "[¤] Bing bloque nos requêtes")
-                    print(RED + "[¤] Veuillez utiliser un autre moteur de recherche")
+                    error = print(RED + "[¤] Bing blocks our requests")
+                    print(RED + "[¤] Please use another search engine")
                     kill(pool)
                 counter += 1
                 links = soup.findAll("cite")
@@ -183,7 +184,7 @@ def bing_search(page, pool, query):
                     result.append(link.text)
             bar.finish()
         except FileNotFoundError:
-            print(f"Vérifiez que le fichier {options.dork} se trouve bien dans le dossier /dorks/")
+            print(f"Check that the {options.dork} file is located on the /dorks/ folder")
     else:
         base_url = "https://www.bing.com/search"
         headers = {"User-Agent": "Mozilla/17.0 (X22; Parrot OS; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0"}
@@ -222,11 +223,14 @@ def search_result(q, engine, pages, processes, result, output):
         ".exploitdb.",
     ]
 
+    if not q:
+        q = 'from ' + options.dork
+
     pagesfolder = os.getcwd() + "/pages/"
     page = pagesfolder + output
     ls = []
     print("-" * 70)
-    print(f"Recherche : {q} dans {pages} page(s) sur {engine} avec {processes} processus")
+    print(f"Search : {q} in {pages} page(s) on {engine} with {processes} processes")
     print("-" * 70)
     print()
     counter = 0
@@ -243,7 +247,7 @@ def search_result(q, engine, pages, processes, result, output):
                             break
                 f.close()
         except:
-            print("Aucun résultat trouvé")
+            print("No results found")
             exit()
     with open(page, "r") as f:
         for line in f:
@@ -257,17 +261,17 @@ def search_result(q, engine, pages, processes, result, output):
             f.write(line)
     print()
     print("-" * 70)
-    print(f"Nombre d'URL: {counter}")
+    print(f"No. of URLs : {counter}")
     print("-" * 70)
-    print(f"Fichier de sortie crée avec succès : {page}")
+    print(f"Successfully created output file : {page}")
 
 
 def is_internet_available():
     try:
         ping = urlopen("http://www.google.com", timeout=5000)
-        return GREEN + "[!] Connexion à Internet : OK !"
+        return GREEN + "[!] Internet connection: OK !"
     except:
-        print(RED + "[!] Connexion à Internet : PAS OK !\n")
+        print(RED + "[!] Internet connection: NOT OK !\n")
         exit()
 
 def main():
@@ -293,11 +297,11 @@ def main():
     
 
     if not options.query and not options.dork:
-        query = input("[?] Entrez votre recherche : ")
+        query = input("[?] Enter your query : ")
     else:
         query = options.query
     if not options.engine:
-        engine = input("[?] Choisissez votre moteur de recherche (Ask | Bing): ")
+        engine = input("[?] : Choose your search engine (Ask | Bing | WoW)")
     else:
         engine = options.engine
 
@@ -305,17 +309,18 @@ def main():
         target = partial(ask_search, query)
     elif engine.lower() == "bing":
         if options.dork:
-            print("[!] La recherche d'URL peut prendre quelques minutes avec l'option -d")
+            print("[!] Searching for URLs can take a few minutes with the -d option")
         target = partial(bing_search(int(pages), pool, query))
     elif engine.lower() == "wow":
         target = partial(wow_search, query)
     else:
-        print("[-] L'option entrée est invalide !...")
-        print("[-] Fermeture du programme....")
+        print("[-] The option is invalid !...")
+        print("[-] Closing the program....")
         exit()
 
     with pool as p:
         result = p.map(target, range(int(pages)))
+        print(options.query) 
     search_result(query, engine, pages, processes, result, output)
 
 banner = """ 
@@ -346,5 +351,5 @@ try:
 except KeyboardInterrupt:
     signal.signal(signal.SIGKILL,sys.exit(1))   
 except TimeoutError:
-    print(RED + "\n[-] Trop de requêtes, Réessayez plus tard....")
+    print(RED + "\n[-] Too many requests, try again later ....")
     exit()
