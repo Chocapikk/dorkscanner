@@ -259,7 +259,7 @@ def main():
         result = search(query, options.engine, pages)
     elif engine.lower() == "wow":
         options.engine = WOW
-        result = search(query, options.engine, pages)e)
+        result = search(query, options.engine, pages)
     else:
         print("[-] The option is invalid !...")
         print("[-] Closing the program....")
