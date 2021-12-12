@@ -79,12 +79,6 @@ def get_arguments():
         "-p", "--pages", dest="pages", help="Specifies the pages numbers (Default: 1)"
     )
     parser.add_argument(
-        "-P",
-        "--processes",
-        dest="processes",
-        help="Specifies the number of processes (Default: 2)",
-    )
-    parser.add_argument(
         "-o",
         "--output",
         dest="output",
@@ -146,7 +140,7 @@ def search(query, engine, page):
         return result
 
 
-def search_result(q, engine, pages, processes, result, output):
+def search_result(q, engine, pages, result, output):
     blacklist = [
         "facebook",
         "google",
@@ -179,7 +173,7 @@ def search_result(q, engine, pages, processes, result, output):
     page = pagesfolder + '/' + output
     ls = []
     print("-" * 70)
-    print(f"Search : {q} in {pages} page(s) on {engine} with {processes} processes")
+    print(f"Search : {q} in {pages} page(s) on {engine}")
     print("-" * 70)
     print()
     counter = 0
@@ -188,6 +182,8 @@ def search_result(q, engine, pages, processes, result, output):
             for r in range:
                 f = open(page, "a", encoding="utf8", errors="ignore")
                 if ("?" in r and "=" in r and "..." not in r and "," not in r and ":" not in r):
+                    if not 'http' in r :
+                        r = 'http://' + r
                     for link in blacklist:
                         if link not in result:
                             if link not in r:
@@ -235,10 +231,6 @@ def main():
     else:
         pages = options.pages
 
-    if not options.processes:
-        processes = 2
-    else:
-        processes = options.processes
     if not options.output:
         output = "pages.txt"
     else:
@@ -270,7 +262,7 @@ def main():
         print("[-] Closing the program....")
         sys.exit(0)
 
-    search_result(query, engine, pages, processes, result, output)
+    search_result(query, engine, pages, result, output)
 
 
 banner = """ 
@@ -303,4 +295,4 @@ except KeyboardInterrupt:
     sys.exit(1)
 except TimeoutError:
     print(RED + "\n[-] Too many requests, try again later ....")
-    sys.exit(0)
+    sys.exit(0
