@@ -7,7 +7,6 @@ import argparse
 import concurrent.futures
 from random import randint
 from functools import partial
-from multiprocessing import Pool
 from progress.bar import ShadyBar
 from urllib.request import urlopen
 from bs4 import BeautifulSoup as bsoup
