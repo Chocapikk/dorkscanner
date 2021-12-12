@@ -61,7 +61,7 @@ color = colours[randint(0, 4)]
 def get_arguments():
     parser = argparse.ArgumentParser(
         prog="python3 dorkscanner.py",
-        description="Example : python3 dorkscanner.py -e Bing -p 2 -P 1 -o test.txt -d dorks.txt",
+        description="Example : python3 dorkscanner.py -e Bing -p 2 -o test.txt -d dorks.txt",
     )
     parser.add_argument(
         "-q",
@@ -295,4 +295,4 @@ except KeyboardInterrupt:
     sys.exit(1)
 except TimeoutError:
     print(RED + "\n[-] Too many requests, try again later ....")
-    sys.exit(0
+    sys.exit(0)
