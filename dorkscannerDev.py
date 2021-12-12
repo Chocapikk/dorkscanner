@@ -101,8 +101,9 @@ def get_arguments():
 
 
 def search(query, engine, page):
-    def _fetch(line:str):
+    def _fetch(line:str,page:int):
         params["q"] = line
+        params["page"] = page
         try:
             resp = requests.get(base_url, params=params, headers=headers)
             soup = bsoup(resp.text, "html.parser")
@@ -120,18 +121,19 @@ def search(query, engine, page):
     souper = engine["soup_tag"], engine["soup_class"]
     if options.dork:
         dorksfile = os.getcwd() + "/dorks/" + options.dork
-
+        page = int(page)
         file = open(dorksfile, "r", encoding="utf8", errors="ignore")
         lines = file.readlines()
-        bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines))
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = []
-            for line in lines:
-                futures.append(executor.submit(_fetch, line=line))
-            for future in concurrent.futures.as_completed(futures):
-                result.append(future.result())
-                counter += 1
-                bar.next()
+        bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines) * page)
+        for pages in range(1,page + 1):
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = []
+                for line in lines:
+                    futures.append(executor.submit(_fetch, line=line, page=pages))
+                for future in concurrent.futures.as_completed(futures):
+                    result.append(future.result())
+                    counter += 1
+                    bar.next()
         bar.finish()
         return result
 
@@ -171,8 +173,10 @@ def search_result(q, engine, pages, processes, result, output):
     if not q:
         q = "from " + options.dork
 
-    pagesfolder = os.getcwd() + "/pages/"
-    page = pagesfolder + output
+    pagesfolder = os.getcwd() + "/pages"
+    if not os.path.exists(pagesfolder):
+        os.makedirs(pagesfolder)
+    page = pagesfolder + '/' + output
     ls = []
     print("-" * 70)
     print(f"Search : {q} in {pages} page(s) on {engine} with {processes} processes")
@@ -195,6 +199,7 @@ def search_result(q, engine, pages, processes, result, output):
         except:
             print("No results found")
             sys.exit(0)
+
     with open(page, "r") as f:
         for line in f:
             if line not in ls and "?" in line and "=" in line:
