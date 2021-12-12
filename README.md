@@ -1,4 +1,4 @@
-# DORK SCANNER V2#
+# DORK SCANNER V2 #
 
 A typical search engine scanner that scans search engines with queries you provide to find vulnerable URLs.
 
@@ -16,10 +16,10 @@ pip3 install -r requirements.txt
 ## Usage ##
 
 ```
-$ python3 dorkscanner.py -h
-usage: python3 dorkscanner.py [-h] [-q QUERY] [-e ENGINE] [-p PAGES] [-P PROCESSES] [-o OUTPUT] [-d DORK]
+# python3 dorkscanner.py -h
+usage: python3 dorkscanner.py [-h] [-q QUERY] [-e ENGINE] [-p PAGES] [-o OUTPUT] [-d DORK]
 
-Example : python3 dorkscanner.py -e Bing -p 2 -P 1 -o test.txt -d dorks.txt
+Example : python3 dorkscanner.py -e Bing -p 2 -o test.txt -d dorks.txt
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -29,11 +29,10 @@ optional arguments:
                         Specifies the search engine (Ask | Bing | WoW)
   -p PAGES, --pages PAGES
                         Specifies the pages numbers (Default: 1)
-  -P PROCESSES, --processes PROCESSES
-                        Specifies the number of processes (Default: 2)
   -o OUTPUT, --output OUTPUT
-                        Specifies the output file name (Default: /home/balgogan/GitHub/dorkscanner/pages/pages.txt)
-  -d DORK, --dork DORK  Specifies the file containing the dorks (Default: /home/balgogan/GitHub/dorkscanner/dorks/dorks.txt)
+                        Specifies the output file name (Default: /home/balgogan/dorkscanner/pages/pages.txt)
+  -d DORK, --dork DORK  Specifies the file containing the dorks (Default: /home/balgogan/dorkscanner/dorks/dorks.txt)
+
   
 ```
 
