@@ -112,31 +112,34 @@ def search(query, engine, page):
     base_url = engine["base_url"]
     headers = engine["headers"]
     souper = engine["soup_tag"], engine["soup_class"]
+    page = int(page)
+
     if options.dork:
         dorksfile = os.getcwd() + "/dorks/" + options.dork
-        page = int(page)
         file = open(dorksfile, "r", encoding="utf8", errors="ignore")
         lines = file.readlines()
-        bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines) * page)
-        for pages in range(1,page + 1):
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = []
-                for line in lines:
-                    futures.append(executor.submit(_fetch, line=line, page=pages))
-                for future in concurrent.futures.as_completed(futures):
-                    result.append(future.result())
-                    counter += 1
-                    bar.next()
-        bar.finish()
-        return result
-
     else:
+        lines = [query]
+    bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines) * page)
+    for pages in range(1,page + 1):
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = []
+            for line in lines:
+                futures.append(executor.submit(_fetch, line=line, page=pages))
+            for future in concurrent.futures.as_completed(futures):
+                result.append(future.result())
+                counter += 1
+                bar.next()
+    bar.finish()
+    return result
+
+    """else:
         resp = requests.get(base_url, params=params, headers=headers)
         soup = bsoup(resp.text, "html.parser")
         links = soup.findAll(souper)
         for link in links:
             result.append(link.text)
-        return result
+        return result"""
 
 
 def search_result(q, engine, pages, result, output):
@@ -195,16 +198,20 @@ def search_result(q, engine, pages, result, output):
             print("No results found")
             sys.exit(0)
 
-    with open(page, "r") as f:
-        for line in f:
-            if line not in ls and "?" in line and "=" in line:
-                for i in blacklist:
-                    if i in line:
-                        break
-                ls.append(line)
-    with open(page, "w") as f:
-        for line in ls:
-            f.write(line)
+    try:
+        with open(page, "r") as f:
+            for line in f:
+                if line not in ls and "?" in line and "=" in line:
+                    for i in blacklist:
+                        if i in line:
+                            break
+                    ls.append(line)
+        with open(page, "w") as f:
+            for line in ls:
+                f.write(line)
+    except FileNotFoundError:
+        print(RED + 'No results found')
+        sys.exit(0)
     print()
     print("-" * 70)
     print(f"No. of URLs : {counter}")
@@ -243,7 +250,9 @@ def main():
     else:
         query = options.query
     if not options.engine:
-        engine = input("[?] : Choose your search engine (Ask | Bing | WoW) : ")
+        engine = input("[?] Choose your search engine (Ask | Bing | WoW) : ")
+        pages = input("[?] How many pages ? : ")
+        output = input("[?] Output file name ? : ") 
     else:
         engine = options.engine
 
@@ -265,7 +274,6 @@ def main():
 
 
 banner = """ 
-
     ·▄▄▄▄        ▄▄▄  ▄ •▄     .▄▄ ·  ▄▄·  ▄▄▄·  ▐ ▄  ▐ ▄ ▄▄▄ .▄▄▄  
     ██▪ ██ ▪     ▀▄ █·█▌▄▌▪    ▐█ ▀. ▐█ ▌▪▐█ ▀█ •█▌▐█•█▌▐█▀▄.▀·▀▄ █·
     ▐█· ▐█▌ ▄█▀▄ ▐▀▀▄ ▐▀▀▄·    ▄▀▀▀█▄██ ▄▄▄█▀▀█ ▐█▐▐▌▐█▐▐▌▐▀▀▪▄▐▀▀▄ 
