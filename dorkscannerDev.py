@@ -133,14 +133,6 @@ def search(query, engine, page):
     bar.finish()
     return result
 
-    """else:
-        resp = requests.get(base_url, params=params, headers=headers)
-        soup = bsoup(resp.text, "html.parser")
-        links = soup.findAll(souper)
-        for link in links:
-            result.append(link.text)
-        return result"""
-
 
 def search_result(q, engine, pages, result, output):
     blacklist = [
@@ -179,25 +171,28 @@ def search_result(q, engine, pages, result, output):
     print("-" * 70)
     print()
     counter = 0
-    for range in result:
-        try:
-            for r in range:
-                f = open(page, "a", encoding="utf8", errors="ignore")
-                if ("?" in r and "=" in r and "..." not in r and "," not in r and ":" not in r):
-                    if not 'http' in r :
-                        r = 'http://' + r
-                    for link in blacklist:
-                        if link not in result:
-                            if link not in r:
-                                f.write(r + "\n")
-                                print(color + "[+] " + r + "\n")
-                                counter += 1
-                                break
-                f.close()
-        except:
-            print("No results found")
-            sys.exit(0)
-
+    if len(result) == 0:
+        print("No results found")
+        sys.exit(0)
+    else:
+        # with block will handle auto closing
+        with open(page, "a", encoding="utf8", errors="ignore") as f:
+            #Result is a list or lists
+            for url_list in result:
+                # skip empty url_lists from SERP
+                if len(url_list) == 0:
+                    pass
+                for url in url_list:
+                    if ("?" in url and "=" in url and "..." not in url and "," not in url and ":" not in url):
+                        if not 'http' in url :
+                            url = 'http://' + url
+                        for link in blacklist:
+                            if link not in result:
+                                if link not in url:
+                                    f.write(url + "\n")
+                                    print(color + "[+] " + url + "\n")
+                                    counter += 1
+                                    break
     try:
         with open(page, "r") as f:
             for line in f:
@@ -220,23 +215,26 @@ def search_result(q, engine, pages, result, output):
 
 
 def is_internet_available():
-    try:
-        ping = urlopen("http://www.google.com", timeout=5000)
-        return GREEN + "[!] Internet connection: OK !"
-    except:
+    if urlopen("http://www.google.com", timeout=5000):
+        print(GREEN + "[!] Internet connection: OK !")
+    else:
         print(RED + "[!] Internet connection: NOT OK !\n")
         sys.exit(0)
 
 
 def main():
 
-    print(is_internet_available())
+    # Check internet with request to google.com
+    is_internet_available()
 
+    """
+    BEGIN: CLI
+        - apply options or set defaults
+    """
     if not options.pages:
         pages = 1
     else:
         pages = options.pages
-
     if not options.output:
         output = "pages.txt"
     else:
@@ -257,18 +255,18 @@ def main():
         engine = options.engine
 
     if engine.lower() == "ask":
-        options.engine = ASK
-        result = search(query, options.engine, pages)
+        result = search(query, ASK, pages)
     elif engine.lower() == "bing":
-        options.engine = BING
-        result = search(query, options.engine, pages)
+        result = search(query, BING, pages)
     elif engine.lower() == "wow":
-        options.engine = WOW
-        result = search(query, options.engine, pages)
+        result = search(query, WOW, pages)
     else:
         print("[-] The option is invalid !...")
         print("[-] Closing the program....")
         sys.exit(0)
+    """
+    END: CLI
+    """
 
     search_result(query, engine, pages, result, output)
 
