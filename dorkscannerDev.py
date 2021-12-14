@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import re
 import sys
 import signal
 import requests
@@ -103,7 +104,7 @@ def search(query, engine, page):
             links = soup.findAll(souper)
             return [link.text for link in links]
         except:
-            pass
+            pass #Proxy and Random User Agent set here
         
     counter = 0
     result = []
@@ -120,7 +121,7 @@ def search(query, engine, page):
         lines = file.readlines()
     else:
         lines = [query]
-    bar = ShadyBar(f"[!] Please wait - Requests performed :", max=len(lines) * page)
+    bar = ShadyBar(f"[!] Requests :", max=len(lines) * page)
     for pages in range(1,page + 1):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = []
@@ -135,6 +136,13 @@ def search(query, engine, page):
 
 
 def search_result(q, engine, pages, result, output):
+    links = []
+    no_duplicates = []
+    valid_links = []
+    regex_hostname = re.compile(r"^(?:https?:\/\/|http?:\/\/)?(?:[^@\/\n]+@)?(?:www.| +)?([^:\/?\n]+)")
+    regex_param = re.compile(r"\?.+\=")
+    regex_ask_badchar = True# re.compile(r"\.+*.:")
+    # I can't find the right regex to avoid bad texts. Maybe i need to web scrap differently on Ask to have only the URL
     blacklist = [
         "facebook",
         "google",
@@ -165,48 +173,39 @@ def search_result(q, engine, pages, result, output):
     if not os.path.exists(pagesfolder):
         os.makedirs(pagesfolder)
     page = pagesfolder + '/' + output
-    ls = []
     print("-" * 70)
     print(f"Search : {q} in {pages} page(s) on {engine}")
     print("-" * 70)
     print()
     counter = 0
-    if len(result) == 0:
-        print("No results found")
+    if not result[0]:
+        print(RED + "No results found\n")
         sys.exit(0)
     else:
         # with block will handle auto closing
         with open(page, "a", encoding="utf8", errors="ignore") as f:
-            #Result is a list or lists
-            for url_list in result:
-                # skip empty url_lists from SERP
-                if len(url_list) == 0:
-                    pass
-                for url in url_list:
-                    if ("?" in url and "=" in url and "..." not in url and "," not in url and ":" not in url):
-                        if not 'http' in url :
-                            url = 'http://' + url
-                        for link in blacklist:
-                            if link not in result:
-                                if link not in url:
-                                    f.write(url + "\n")
-                                    print(color + "[+] " + url + "\n")
-                                    counter += 1
-                                    break
-    try:
-        with open(page, "r") as f:
-            for line in f:
-                if line not in ls and "?" in line and "=" in line:
-                    for i in blacklist:
-                        if i in line:
-                            break
-                    ls.append(line)
-        with open(page, "w") as f:
-            for line in ls:
-                f.write(line)
-    except FileNotFoundError:
-        print(RED + 'No results found')
-        sys.exit(0)
+            # Sometimes the result list is empty so a url_list has no length (NoneType).
+            try:
+                for url_list in result:
+                    for url in url_list:
+                        if re.search(regex_param,url): # Now with this regex, only bing is working. On Ask and Wow there's bad text. Need to scrap better but i don't know how to do.
+                            if not 'http' in url:
+                                url = 'http://' + url
+                                valid_links.append(url)
+            except TypeError:
+                print(RED + "No results found\n")
+                sys.exit(0)
+
+            valid_links = set(valid_links)  
+            for url in valid_links:
+                    # The for loop is to sort all links that are not in the blacklist 
+                    blacklist_func = re.compile('|'.join([re.escape(word) for word in blacklist]))
+                    links = [word for word in valid_links if not blacklist_func.search(word)]
+
+            for url in links:    
+                f.write(url + "\n")
+                print(color + "[+] " + url + "\n")
+                counter += 1
     print()
     print("-" * 70)
     print(f"No. of URLs : {counter}")
