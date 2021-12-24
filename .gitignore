@@ -1,2 +1,5 @@
 .venv/
 .vscode/
+old/
+run.py
+__pycache__

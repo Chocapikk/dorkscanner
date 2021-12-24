@@ -1,0 +1,10 @@
+inurl:iniziativa.php?in=
+inurl:curriculum.php?id=
+inurl:labels.php?id=
+inurl:story.php?id=
+inurl:look.php?ID=
+inurl:newsone.php?id=
+inurl:aboutbook.php?id=
+inurl:material.php?id=
+inurl:opinions.php?id=
+inurl:announce.php?id=

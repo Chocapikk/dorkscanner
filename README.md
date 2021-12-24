@@ -1,10 +1,11 @@
-# DORK SCANNER V2 #
+# DORK SCANNER V2.5.0 #
 
-A typical search engine scanner that scans search engines with queries you provide to find vulnerable URLs.
+An atypical search engine scanner that scans search engines with queries you provide to find vulnerable URLs.
 
 
 ## Introduction ##
 
+### What is dorking?
 Dorking is a technique used by news organizations, investigative agencies, security auditors, and savvy criminals to query various search engines to find hidden information on public websites and vulnerabilities exposed by public servers. Dorking is a way to use search engines to their fullest capacity to penetrate web-based services to depths that may not be visible at first glance.
 
 ## Requirements ##
@@ -15,11 +16,12 @@ pip3 install -r requirements.txt
 
 ## Usage ##
 
+### Command Line Interface
 ```
-# python3 dorkscanner.py -h
-usage: python3 dorkscanner.py [-h] [-q QUERY] [-e ENGINE] [-p PAGES] [-o OUTPUT] [-d DORK]
+# python3 cli.py -h
+usage: python3 cli.py [-h] [-q QUERY] [-e ENGINE] [-p PAGES] [-o OUTPUT] [-d DORK]
 
-Example : python3 dorkscanner.py -e Bing -p 2 -o test.txt -d dorks.txt
+Example : python3 cli.py -e Bing -p 2 -o test.txt -d dorks.txt
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -36,9 +38,11 @@ optional arguments:
   
 ```
 
-### You can also specify arguments inside the program:
+#### You can also specify arguments inside the program:
 
 ```
-Enter the search query: 
+Enter the search query:
 Choose the search engine (Ask | Bing | WoW):
 ```
+
+### Python Module
