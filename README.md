@@ -32,8 +32,8 @@ optional arguments:
   -P PROCESSES, --processes PROCESSES
                         Specifies the number of processes (Default: 2)
   -o OUTPUT, --output OUTPUT
-                        Specifies the output file name (Default: /home/balgogan/GitHub/dorkscanner/pages/pages.txt)
-  -d DORK, --dork DORK  Specifies the file containing the dorks (Default: /home/balgogan/GitHub/dorkscanner/dorks/dorks.txt)
+                        Specifies the output file name (Default: /home/chocapik/GitHub/dorkscanner/pages/pages.txt)
+  -d DORK, --dork DORK  Specifies the file containing the dorks (Default: /home/chocapik/GitHub/dorkscanner/dorks/dorks.txt)
   
 ```
 
